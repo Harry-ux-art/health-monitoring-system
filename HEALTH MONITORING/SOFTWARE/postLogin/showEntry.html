@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="../css/showEntry.css">
+    <link rel="stylesheet" href="../css/nav.css">
+    <link rel="shortcut icon" href="../img/logo_round.png" />
+
+    <title>HEALTHCARE MONITORING</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation" id="navToggle">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+  
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item ">
+            <a class="nav-link" href="options.html">HOME</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="addPatient.html">CREATE PATIENT ENTRY </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="attachDrip.html">PATIENT DETAIL </a>
+          </li>
+            <li class="nav-item active">
+            <a class="nav-link" href="#">SHOW STATUS <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="deattachDrip.html">PATIENT DOCUMENT </a>
+          </li>
+          
+          <li class="nav-item ">
+            <a class="nav-link" href="removePatient.html">DELETE PATIENT ENTRY</a>
+          </li>
+        </ul>
+        <form class="form-inline">
+          <button class="btn btn-light" type="button" id="logout">SIGN OUT</button>
+        </form>
+        </div>
+        <h2 class="heading" id="headingPhone">SHOW STATUS OF THE PATIENT</h2>
+      </nav>
+    <!-- <h1>Hello, world!</h1> -->
+    <div id="logoContainer" class="container">
+      <img id="logo" src="../img/logo_round.png">
+    </div>
+    <div id="show" class="container">
+
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <!-- <script src="https://www.gstatic.com/firebasejs/7.14.0/firebase-app.js"></script>
+    </script> -->
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-storage.js"></script>
+            <script id="MainScript">
+                     var firebaseConfig = {
+            apiKey: "AIzaSyAaWLnAWCO6wnPiVGWICltopV-Gi49AjyE",
+            authDomain: "health-band-c7724.firebaseapp.com",
+            projectId: "health-band-c7724",
+            storageBucket: "health-band-c7724.appspot.com",
+            messagingSenderId: "726529542100",
+            appId: "1:726529542100:web:16b60b376ac05eb8e27841",
+            measurementId: "G-X92W52DK6T"
+          };
+          firebase.initializeApp(firebaseConfig);
+                var db = firebase.database();
+      </script>
+      <script>
+const div = document.getElementById('show');
+
+//const db = firebaseConfig2.database();
+db.ref().on('value', function (snapshot) {
+	div.innerHTML = '';
+	snapshot.forEach(function (childSnapshot) {
+		var roomNumber = parseInt(childSnapshot.key.slice(12), 10);
+		console.log(roomNumber);
+		childSnapshot.forEach(function (child2Snapshot) {
+			var bedNumber = parseInt(child2Snapshot.key.slice(11), 10);
+			console.log(bedNumber);
+
+			var divPat = document.createElement('div');
+			divPat.classList.add('patBox');
+
+			let patient = {
+				'PATIENT ID': child2Snapshot.child('patientId').val(),
+				'NAME': child2Snapshot.child('patientName').val(),
+				'BED NUMBER': bedNumber,
+				'ROOM NUMBER': roomNumber,
+				'DISEASE': child2Snapshot.child('patientIVFluid').val(),
+				'PATIENT STATUS': child2Snapshot.child('dripStatus').val(),
+			};
+
+			let divDetail;
+			for (detail in patient) {
+				if (!(detail === 'DRIP STATUS')) {
+					divDetail = document.createElement('div');
+					divDetail.classList.add('patItem');
+					divDetail.innerHTML = `<b>${detail}:</b> ${patient[detail]}`;
+					divPat.appendChild(divDetail);
+				}
+			}
+
+			divPat.style.borderRadius = '17px';
+
+			if (patient['PATIENT STATUS']>70) {
+				divPat.style.boxShadow = '0 0 20px 2px #00E676';
+			} else {
+				divPat.style.boxShadow = '0 0 20px 2px #FF1744';
+			}
+
+			div.appendChild(divPat);
+		});
+	});
+});
+
+      </script>
+    <script src="../js/nav.js"></script>
+
+  </body>
+</html>

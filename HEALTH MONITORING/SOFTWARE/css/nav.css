@@ -1,0 +1,19 @@
+.heading {
+	display: none;
+	font-size: medium;
+	align-content: center;
+	text-align: center;
+	margin-right: 0;
+	margin-bottom: 0;
+	color: rgba(255, 255, 255, 0.8);
+}
+
+@media screen and (max-width: 992px) {
+	.heading {
+		display: block;
+	}
+}
+
+.hide {
+	display: none;
+}
